@@ -1,7 +1,9 @@
-import type { NextConfig } from "next";
+import { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    serverActions: {}, // It should be an object, not a boolean
+  },
 };
 
 export default nextConfig;
