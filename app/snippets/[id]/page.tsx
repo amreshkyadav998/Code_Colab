@@ -1,308 +1,390 @@
 "use client"
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
 
-// Update interfaces to match your MongoDB/API structure
-interface Author {
-  _id: string;
-  name: string;
-  image?: string;
-}
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Copy, Edit, Eye, Globe, Heart, Loader2, Lock, MessageSquare, Share2, Trash } from "lucide-react"
+import { formatDistanceToNow, format } from "date-fns"
 
-interface Snippet {
-  _id: string;
-  title: string;
-  description: string;
-  code: string;
-  language: string;
-  visibility: "public" | "private" | "unlisted";
-  tags: string[];
-  author: Author;
-  views: number;
-  version: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface CommentType {
-  _id: string;
-  text: string;
-  author: Author;
-  snippet: string;
-  createdAt: string;
-}
-
-const SnippetPage = () => {
-  const { id } = useParams();
-  const { data: session } = useSession();
-  const router = useRouter();
-
-  const [snippet, setSnippet] = useState<Snippet | null>(null);
-  const [comments, setComments] = useState<CommentType[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-  const [debugInfo, setDebugInfo] = useState<string>("");
-  const [newComment, setNewComment] = useState<string>("");
-  const [isSubmittingComment, setIsSubmittingComment] = useState<boolean>(false);
-
-  const fetchSnippet = useCallback(async () => {
-    if (!id) return;
-    setIsLoading(true);
-    setError("");
-    setDebugInfo("");
-
-    try {
-      // Make sure we're using the correct API URL
-      const apiUrl = `/api/snippets/${id}/route.ts`;
-      console.log(`Fetching from: ${apiUrl}`);
-      
-      const response = await fetch(apiUrl);
-      console.log(`Response status: ${response.status}`);
-      
-      // Check if the response is JSON
-      const contentType = response.headers.get("content-type");
-      console.log(`Content type: ${contentType}`);
-      
-      if (!contentType || !contentType.includes("application/json")) {
-        // If not JSON, get the text and show it for debugging
-        const text = await response.text();
-        console.error("Non-JSON response:", text.substring(0, 100) + "...");
-        setDebugInfo(`API returned non-JSON response. Status: ${response.status}, Content-Type: ${contentType}, Response preview: ${text.substring(0, 100)}...`);
-        throw new Error("API returned non-JSON response");
-      }
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Failed to fetch snippet. Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Received data:", data);
-      setSnippet(data.snippet);
-      setComments(data.comments || []);
-    } catch (error: any) {
-      console.error("Error fetching snippet:", error);
-      setError(error.message || "An error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [id]);
+export default function SnippetPage({ params }: { params: { id: string } }) {
+  const router = useRouter()
+  const { data: session, status } = useSession()
+  const [snippet, setSnippet] = useState<any>(null)
+  const [comments, setComments] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState("")
+  const [copied, setCopied] = useState(false)
+  const [newComment, setNewComment] = useState("")
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
 
   useEffect(() => {
-    fetchSnippet();
-  }, [fetchSnippet]);
+    fetchSnippet()
+  }, [params.id])
 
-  const handleSubmitComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComment.trim() || !session?.user) return;
-    
-    setIsSubmittingComment(true);
+  const fetchSnippet = async () => {
+    setIsLoading(true)
+    setError("")
+
     try {
-      const response = await fetch(`/api/snippets/${id}/comments`, {
+      const response = await fetch(`/api/snippets/${params.id}`)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch snippet")
+      }
+
+      setSnippet(data.snippet)
+      setComments(data.comments || [])
+      setLikeCount(data.snippet.likes || 0)
+
+      // Check if user has liked this snippet
+      if (session?.user?.id && data.snippet.likedBy) {
+        setIsLiked(data.snippet.likedBy.includes(session.user.id))
+      }
+    } catch (error: any) {
+      setError(error.message || "An error occurred")
+      console.error("Error fetching snippet:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const copyToClipboard = () => {
+    if (snippet?.code) {
+      navigator.clipboard.writeText(snippet.code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this snippet? This action cannot be undone.")) {
+      try {
+        const response = await fetch(`/api/snippets/${params.id}`, {
+          method: "DELETE",
+        })
+
+        if (response.ok) {
+          router.push("/profile")
+        } else {
+          const data = await response.json()
+          throw new Error(data.message || "Failed to delete snippet")
+        }
+      } catch (error: any) {
+        console.error("Error deleting snippet:", error)
+        alert(error.message || "An error occurred while deleting the snippet")
+      }
+    }
+  }
+
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) return
+
+    setIsSubmittingComment(true)
+
+    try {
+      const response = await fetch(`/api/snippets/${params.id}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          text: newComment,
-          snippetId: id,
-        }),
-      });
+        body: JSON.stringify({ content: newComment }),
+      })
+
+      const data = await response.json()
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to post comment");
+        throw new Error(data.message || "Failed to add comment")
       }
 
-      // Refresh comments
-      fetchSnippet();
-      setNewComment("");
+      setComments([data.comment, ...comments])
+      setNewComment("")
     } catch (error: any) {
-      setError(error.message || "Failed to post comment");
+      console.error("Error adding comment:", error)
+      alert(error.message || "An error occurred while adding your comment")
     } finally {
-      setIsSubmittingComment(false);
+      setIsSubmittingComment(false)
     }
-  };
+  }
+
+  const toggleLike = async () => {
+    if (!session) {
+      router.push("/auth/signin")
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/snippets/${params.id}/like`, {
+        method: "POST",
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to like snippet")
+      }
+
+      setIsLiked(data.liked)
+      setLikeCount(data.likeCount)
+    } catch (error: any) {
+      console.error("Error liking snippet:", error)
+    }
+  }
+
+  const getVisibilityIcon = () => {
+    switch (snippet?.visibility) {
+      case "public":
+        return <Globe className="h-4 w-4" />
+      case "private":
+        return <Lock className="h-4 w-4" />
+      default:
+        return <Share2 className="h-4 w-4" />
+    }
+  }
 
   if (isLoading) {
     return (
-      <div className="container max-w-4xl py-8">
-        <div className="flex justify-center items-center h-64">
-          <p className="text-lg">Loading snippet...</p>
-        </div>
+      <div className="container flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
-      <div className="container max-w-4xl py-10">
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-red-600 font-medium">Error: {error}</p>
-          {debugInfo && (
-            <div className="mt-4 p-3 bg-gray-50 rounded text-sm font-mono overflow-auto">
-              <p className="text-gray-700">Debug Info:</p>
-              <p className="text-gray-600">{debugInfo}</p>
-            </div>
-          )}
-          <div className="mt-4">
-            <button 
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              onClick={fetchSnippet}
-            >
-              Try Again
-            </button>
-            <button 
-              className="ml-4 text-blue-600 hover:underline"
-              onClick={() => router.push('/snippets')}
-            >
-              Back to snippets
-            </button>
-          </div>
-        </div>
+      <div className="container py-8">
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <Button className="mt-4" onClick={() => router.push("/explore")}>
+          Back to Explore
+        </Button>
       </div>
-    );
+    )
   }
 
   if (!snippet) {
     return (
-      <div className="container max-w-4xl py-8">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-          <p className="text-yellow-600">Snippet not found</p>
-          <button 
-            className="mt-4 text-blue-600 hover:underline"
-            onClick={() => router.push('/snippets')}
-          >
-            Back to snippets
-          </button>
-        </div>
+      <div className="container py-8">
+        <Alert>
+          <AlertDescription>Snippet not found</AlertDescription>
+        </Alert>
+        <Button className="mt-4" onClick={() => router.push("/explore")}>
+          Back to Explore
+        </Button>
       </div>
-    );
+    )
   }
 
+  const isOwner = session?.user?.id === snippet.author?._id
+
   return (
-    <div className="container max-w-4xl py-8">
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="container py-8">
+      <div className="grid gap-6">
         {/* Snippet Header */}
-        <div className="p-6 border-b">
-          <div className="flex justify-between items-start">
+        <div className="flex flex-col md:flex-row justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">{snippet.title}</h1>
+            <div className="flex items-center gap-3 mt-2">
+              <div className="flex items-center gap-2">
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={snippet.author?.image || ""} alt={snippet.author?.name || "User"} />
+                  <AvatarFallback>{snippet.author?.name?.charAt(0) || "U"}</AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium">{snippet.author?.name}</span>
+              </div>
+              <span className="text-sm text-muted-foreground">
+                {snippet.createdAt && formatDistanceToNow(new Date(snippet.createdAt), { addSuffix: true })}
+              </span>
+              <Badge variant="outline" className="flex items-center gap-1">
+                {getVisibilityIcon()}
+                {snippet.visibility.charAt(0).toUpperCase() + snippet.visibility.slice(1)}
+              </Badge>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {isOwner && (
+              <>
+                <Button variant="outline" size="sm" onClick={() => router.push(`/snippets/edit/${params.id}`)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleDelete}>
+                  <Trash className="mr-2 h-4 w-4" />
+                  Delete
+                </Button>
+              </>
+            )}
+            <Button variant="outline" size="sm" onClick={copyToClipboard}>
+              {copied ? (
+                <span className="text-green-500">Copied!</span>
+              ) : (
+                <>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copy Code
+                </>
+              )}
+            </Button>
+            <Button variant="outline" size="sm">
+              <Share2 className="mr-2 h-4 w-4" />
+              Share
+            </Button>
+          </div>
+        </div>
+
+        {/* Description */}
+        {snippet.description && <div className="text-muted-foreground">{snippet.description}</div>}
+
+        {/* Tags */}
+        {snippet.tags && snippet.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {snippet.tags.map((tag: string) => (
+              <Badge key={tag} variant="secondary">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {/* Code */}
+        <Card>
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">{snippet.title}</h1>
-              <p className="text-gray-500 text-sm mt-1">
-                Posted by {snippet.author.name} • {new Date(snippet.createdAt).toLocaleDateString()}
-              </p>
+              <CardTitle className="text-sm font-medium">
+                {snippet.language.charAt(0).toUpperCase() + snippet.language.slice(1)}
+              </CardTitle>
             </div>
-            <div className="text-sm text-gray-500">
-              <span className="mr-4">{snippet.views} views</span>
-              <span>Version {snippet.version}</span>
+            <Button variant="ghost" size="sm" onClick={copyToClipboard}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono">{snippet.code}</pre>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center">
+                <Eye className="mr-1 h-4 w-4" />
+                {snippet.views || 0}
+              </div>
+              <div className="flex items-center">
+                <MessageSquare className="mr-1 h-4 w-4" />
+                {comments.length}
+              </div>
             </div>
-          </div>
-          {snippet.description && (
-            <p className="mt-4 text-gray-700">{snippet.description}</p>
-          )}
-          {snippet.tags.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {snippet.tags.map((tag) => (
-                <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Code Section */}
-        <div className="p-6 bg-gray-50 border-b">
-          <div className="flex justify-between items-center mb-2">
-            <span className="font-medium text-sm text-gray-700">
-              {snippet.language.charAt(0).toUpperCase() + snippet.language.slice(1)}
-            </span>
-            <button 
-              className="text-sm text-blue-600 hover:underline"
-              onClick={() => {
-                navigator.clipboard.writeText(snippet.code);
-                alert("Code copied to clipboard!");
-              }}
+            <Button
+              variant={isLiked ? "default" : "ghost"}
+              size="sm"
+              onClick={toggleLike}
+              className={isLiked ? "bg-primary/10 hover:bg-primary/20 text-primary" : ""}
             >
-              Copy Code
-            </button>
-          </div>
-          <pre className="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto">
-            <code>{snippet.code}</code>
-          </pre>
-        </div>
+              <Heart className={`mr-1 h-4 w-4 ${isLiked ? "fill-primary" : ""}`} />
+              {likeCount}
+            </Button>
+          </CardFooter>
+        </Card>
 
-        {/* Comments Section */}
-        <div className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Comments ({comments.length})</h2>
-          
-          {session?.user ? (
-            <form onSubmit={handleSubmitComment} className="mb-6">
-              <textarea
-                className="w-full border border-gray-300 rounded-md p-2 mb-2"
-                rows={3}
-                placeholder="Leave a comment..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                required
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-                disabled={isSubmittingComment || !newComment.trim()}
-              >
-                {isSubmittingComment ? "Posting..." : "Post Comment"}
-              </button>
-            </form>
-          ) : (
-            <div className="mb-6 p-4 bg-gray-50 rounded-md">
-              <p>
-                <a href="/api/auth/signin" className="text-blue-600 hover:underline">
-                  Sign in
-                </a>{" "}
-                to leave a comment.
-              </p>
-            </div>
-          )}
+        {/* Comments and Version History */}
+        <Tabs defaultValue="comments">
+          <TabsList>
+            <TabsTrigger value="comments">Comments ({comments.length})</TabsTrigger>
+            <TabsTrigger value="history">Version History ({snippet.previousVersions?.length || 0})</TabsTrigger>
+          </TabsList>
 
-          {comments.length > 0 ? (
-            <div className="space-y-4">
-              {comments.map((comment) => (
-                <div key={comment._id} className="border-b border-gray-100 pb-4">
-                  <div className="flex items-start gap-3">
-                    {comment.author.image ? (
-                      <img
-                        src={comment.author.image}
-                        alt={comment.author.name}
-                        className="w-8 h-8 rounded-full"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                        {comment.author.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    <div>
+          <TabsContent value="comments">
+            {/* Add Comment */}
+            {session ? (
+              <div className="mb-6">
+                <Textarea
+                  placeholder="Add a comment..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="mb-2"
+                />
+                <Button onClick={handleCommentSubmit} disabled={isSubmittingComment || !newComment.trim()}>
+                  {isSubmittingComment ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Posting...
+                    </>
+                  ) : (
+                    "Post Comment"
+                  )}
+                </Button>
+              </div>
+            ) : (
+              <div className="mb-6 p-4 bg-muted rounded-md text-center">
+                <p className="mb-2">Sign in to leave a comment</p>
+                <Button onClick={() => router.push("/auth/signin")}>Sign In</Button>
+              </div>
+            )}
+
+            {/* Comments List */}
+            {comments.length > 0 ? (
+              <div className="space-y-4">
+                {comments.map((comment) => (
+                  <Card key={comment._id}>
+                    <CardHeader className="pb-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{comment.author.name}</span>
-                        <span className="text-gray-500 text-xs">
-                          {new Date(comment.createdAt).toLocaleDateString()}
-                        </span>
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={comment.author?.image || ""} alt={comment.author?.name || "User"} />
+                          <AvatarFallback>{comment.author?.name?.charAt(0) || "U"}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <span className="text-sm font-medium">{comment.author?.name}</span>
+                          <span className="text-xs text-muted-foreground ml-2">
+                            {comment.createdAt && formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                          </span>
+                        </div>
                       </div>
-                      <p className="mt-1">{comment.text}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 italic">No comments yet. Be the first to comment!</p>
-          )}
-        </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm">{comment.content}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">No comments yet. Be the first to comment!</div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="history">
+            {snippet.previousVersions && snippet.previousVersions.length > 0 ? (
+              <div className="space-y-4">
+                {snippet.previousVersions.map((version: any, index: number) => (
+                  <Card key={index}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Version {version.version}</CardTitle>
+                      <CardDescription>
+                        {version.updatedAt && format(new Date(version.updatedAt), "PPpp")}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono max-h-60">
+                        {version.code}
+                      </pre>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">No previous versions available.</div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SnippetPage;

@@ -88,7 +88,7 @@ export default function NewSnippet() {
         }
 
         try {
-            const response = await fetch("/api/snippets", {
+            const response = await fetch("/api/snippets/[id]", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

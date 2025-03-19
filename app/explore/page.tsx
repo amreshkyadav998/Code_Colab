@@ -47,10 +47,13 @@ export default function ExplorePage() {
     limit: 12,
     pages: 1,
   })
+  
+  // This keeps track of when to trigger searches
+  const [searchTrigger, setSearchTrigger] = useState(0)
 
   useEffect(() => {
     fetchSnippets()
-  }, [selectedLanguage, selectedTag, pagination.page])
+  }, [selectedLanguage, selectedTag, pagination.page, searchTrigger])
 
   const fetchSnippets = async () => {
     setIsLoading(true)
@@ -90,7 +93,9 @@ export default function ExplorePage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     setPagination({ ...pagination, page: 1 })
-    fetchSnippets()
+    
+    // This will trigger the useEffect
+    setSearchTrigger(prev => prev + 1)
 
     // Update URL with search params
     const params = new URLSearchParams()
@@ -228,6 +233,7 @@ export default function ExplorePage() {
                 setSelectedLanguage("")
                 setSelectedTag("")
                 setPagination({ ...pagination, page: 1 })
+                setSearchTrigger(prev => prev + 1) // Add this to trigger a search after clearing filters
               }}
             >
               Clear Filters
@@ -238,4 +244,3 @@ export default function ExplorePage() {
     </div>
   )
 }
-

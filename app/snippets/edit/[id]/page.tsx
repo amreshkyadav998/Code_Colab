@@ -88,6 +88,11 @@ export default function SnippetPage() {
     }
   }
 
+  const handleEdit = () => {
+    // Navigate to the edit page with the snippet ID
+    router.push(`/snippets/editroute/${params.id}`)
+  }
+
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) return
 
@@ -190,7 +195,7 @@ export default function SnippetPage() {
   const isOwner = session?.user?.id === snippet.author?._id
 
   return (
-    <div className="container py-8">
+    <div className="container py-[150px]">
       <div className="grid gap-6">
         {/* Snippet Header */}
         <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -217,7 +222,7 @@ export default function SnippetPage() {
           <div className="flex flex-wrap gap-2">
             {isOwner && (
               <>
-                <Button variant="outline" size="sm" onClick={() => router.push(`/snippets/edit/${params.id}`)}>
+                <Button variant="outline" size="sm" onClick={handleEdit}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit
                 </Button>
@@ -389,4 +394,3 @@ export default function SnippetPage() {
     </div>
   )
 }
-
