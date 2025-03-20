@@ -6,7 +6,10 @@ import { NextResponse } from "next/server"
 import { authOptions } from "@/lib/auth-options"
 import mongoose from "mongoose"
 
-export async function POST(request: Request, context: { params: { id: string } }) {
+// Fix: Use NextRequest and proper context typing
+import { NextRequest } from "next/server"
+
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -14,7 +17,6 @@ export async function POST(request: Request, context: { params: { id: string } }
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
-    const { params } = context;
     const snippetId = params.id;
     const { content } = await request.json();
 
