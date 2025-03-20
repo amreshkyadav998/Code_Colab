@@ -34,7 +34,7 @@ export default function Navbar() {
           <Link href="/explore" className="text-muted-foreground hover:text-foreground transition-colors">
             Explore
           </Link>
-          <Link href="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/allposts" className="text-muted-foreground hover:text-foreground transition-colors">
             Snippets
           </Link>
         </nav>
@@ -95,8 +95,8 @@ export default function Navbar() {
             <Link href="/explore" className="text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMenuOpen(false)}>
               Explore
             </Link>
-            <Link href="/profile" className="text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMenuOpen(false)}>
-              My Snippets
+            <Link href="/allposts" className="text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMenuOpen(false)}>
+              Snippets
             </Link>
           </nav>
         </div>

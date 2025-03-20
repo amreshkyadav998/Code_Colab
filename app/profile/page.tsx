@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -28,12 +28,17 @@ interface Snippet {
   tags?: string[];
 }
 
+interface EnhancedSnippetCardProps {
+  snippet: Snippet;
+  onDelete: () => void;
+}
+
 // Enhanced SnippetCard component with visible action buttons
-function EnhancedSnippetCard({ snippet, onDelete }) {
+function EnhancedSnippetCard({ snippet, onDelete }: EnhancedSnippetCardProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   
-  const handleDelete = async (e) => {
+  const handleDelete = async (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this snippet?")) {
       setIsDeleting(true);
@@ -52,17 +57,17 @@ function EnhancedSnippetCard({ snippet, onDelete }) {
     }
   };
 
-  const handleEdit = (e) => {
+  const handleEdit = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     router.push(`/snippets/edit/${snippet._id}`);
   };
 
-  const handleView = (e) => {
+  const handleView = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     router.push(`/snippets/${snippet._id}`);
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string | number | Date) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -71,7 +76,7 @@ function EnhancedSnippetCard({ snippet, onDelete }) {
   };
 
   // Function to get language color
-  const getLanguageColor = (lang) => {
+  const getLanguageColor = (lang: string) => {
     const colors = {
       javascript: "bg-yellow-500",
       typescript: "bg-blue-500",
@@ -131,20 +136,21 @@ function EnhancedSnippetCard({ snippet, onDelete }) {
       <CardContent>
         <div className="space-y-4">
           {/* Tags */}
-          {snippet.tags && snippet.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {snippet.tags.slice(0, 3).map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs bg-transparent">
-                  <Tag className="h-3 w-3 mr-1" /> {tag}
-                </Badge>
-              ))}
-              {snippet.tags.length > 3 && (
-                <Badge variant="outline" className="text-xs bg-transparent">
-                  +{snippet.tags.length - 3}
-                </Badge>
-              )}
-            </div>
-          )}
+          {/* Tags */}
+{snippet.tags && snippet.tags.length > 0 && (
+  <div className="flex flex-wrap gap-1">
+    {snippet.tags.slice(0, 3).map((tag: string, index: number) => (
+      <Badge key={index} variant="outline" className="text-xs bg-transparent">
+        <Tag className="h-3 w-3 mr-1" /> {tag}
+      </Badge>
+    ))}
+    {snippet.tags.length > 3 && (
+      <Badge variant="outline" className="text-xs bg-transparent">
+        +{snippet.tags.length - 3}
+      </Badge>
+    )}
+  </div>
+)}
 
           {/* Date */}
           <div className="text-xs text-gray-500 dark:text-gray-400">
