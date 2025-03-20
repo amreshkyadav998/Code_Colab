@@ -7,10 +7,11 @@ import { authOptions } from "@/lib/auth-options"
 import mongoose from "mongoose"
 import { NextRequest } from "next/server"
 
-// Fix: Use correct parameter typing for App Router
+// Fix: Use the correct type definition for the route handler
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  // Use the exact type expected by Next.js for route handlers
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -19,7 +20,7 @@ export async function POST(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
-    const snippetId = context.params.id;
+    const snippetId = params.id;
     const { content } = await request.json();
 
     if (!content || !content.trim()) {
