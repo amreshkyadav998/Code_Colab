@@ -8,32 +8,32 @@ import { authOptions } from "@/lib/auth-options";
 import mongoose from "mongoose";
 
 // Define interfaces for your data structures
-interface Author {
-  _id: mongoose.Types.ObjectId;
-  name: string;
-  image?: string;
-}
+// interface Author {
+//   _id: mongoose.Types.ObjectId;
+//   name: string;
+//   image?: string;
+// }
 
-interface SnippetDocument {
-  _id: mongoose.Types.ObjectId;
-  title: string;
-  description: string;
-  code: string;
-  language: string;
-  visibility: "public" | "private" | "unlisted";
-  tags: string[];
-  author: Author | mongoose.Types.ObjectId;
-  views: number;
-  version: number;
-  previousVersions: {
-    code: string;
-    updatedAt: Date;
-    version: number;
-  }[];
-  createdAt: Date;
-  updatedAt: Date;
-  __v: number;
-}
+// interface SnippetDocument {
+//   _id: mongoose.Types.ObjectId;
+//   title: string;
+//   description: string;
+//   code: string;
+//   language: string;
+//   visibility: "public" | "private" | "unlisted";
+//   tags: string[];
+//   author: Author | mongoose.Types.ObjectId;
+//   views: number;
+//   version: number;
+//   previousVersions: {
+//     code: string;
+//     updatedAt: Date;
+//     version: number;
+//   }[];
+//   createdAt: Date;
+//   updatedAt: Date;
+//   __v: number;
+// }
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
