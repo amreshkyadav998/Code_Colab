@@ -1,396 +1,387 @@
 "use client"
 
-import { use , useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react"
+import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Copy, Edit, Eye, Globe, Heart, Loader2, Lock, MessageSquare, Share2, Trash } from "lucide-react"
-import { formatDistanceToNow, format } from "date-fns"
+import { 
+  Code, 
+  Globe, 
+  Lock, 
+  Users, 
+  X, 
+  Plus, 
+  Save, 
+  ArrowLeft, 
+  Loader2 
+} from "lucide-react"
 
-export default function SnippetPage() {
-  const router = useRouter()
-  const { data: session, status } = useSession()
+export default function EditSnippetPage() {
+  const router = useRouter();
   const params = useParams();
-  const [snippet, setSnippet] = useState<any>(null)
-  const [comments, setComments] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [copied, setCopied] = useState(false)
-  const [newComment, setNewComment] = useState("")
-  const [isSubmittingComment, setIsSubmittingComment] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
-  const [likeCount, setLikeCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [snippet, setSnippet] = useState<any>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [language, setLanguage] = useState("");
+  const [code, setCode] = useState("");
+  const [visibility, setVisibility] = useState("public");
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  
+  const languageOptions = [
+    "javascript", "typescript", "python", "java", "c", "cpp", "csharp", "go", 
+    "ruby", "rust", "php", "swift", "kotlin", "html", "css", "sql", "bash", "json"
+  ];
 
+  // Fetch snippet data on component mount
   useEffect(() => {
-    fetchSnippet()
-  }, [params.id])
+    const fetchSnippet = async () => {
+      setIsLoading(true);
+      setError("");
 
-  const fetchSnippet = async () => {
-    setIsLoading(true)
-    setError("")
-
-    try {
-      const response = await fetch(`/api/snippets/${params.id}`)
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch snippet")
-      }
-
-      setSnippet(data.snippet)
-      setComments(data.comments || [])
-      setLikeCount(data.snippet.likes || 0)
-
-      // Check if user has liked this snippet
-      if (session?.user?.id && data.snippet.likedBy) {
-        setIsLiked(data.snippet.likedBy.includes(session.user.id))
-      }
-    } catch (error: any) {
-      setError(error.message || "An error occurred")
-      console.error("Error fetching snippet:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const copyToClipboard = () => {
-    if (snippet?.code) {
-      navigator.clipboard.writeText(snippet.code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (confirm("Are you sure you want to delete this snippet? This action cannot be undone.")) {
       try {
-        const response = await fetch(`/api/snippets/${params.id}`, {
-          method: "DELETE",
-        })
+        const response = await fetch(`/api/snippets/${params.id}`);
+        const data = await response.json();
 
-        if (response.ok) {
-          router.push("/profile")
-        } else {
-          const data = await response.json()
-          throw new Error(data.message || "Failed to delete snippet")
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch snippet");
         }
+
+        setSnippet(data.snippet);
+        setTitle(data.snippet.title);
+        setDescription(data.snippet.description || "");
+        setLanguage(data.snippet.language);
+        setCode(data.snippet.code);
+        setVisibility(data.snippet.visibility);
+        setTags(data.snippet.tags || []);
       } catch (error: any) {
-        console.error("Error deleting snippet:", error)
-        alert(error.message || "An error occurred while deleting the snippet")
+        setError(error.message || "An error occurred while fetching the snippet");
+        console.error("Error fetching snippet:", error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }
+    };
 
-  const handleEdit = () => {
-    // Navigate to the edit page with the snippet ID
-    router.push(`/snippets/editroute/${params.id}`)
-  }
+    fetchSnippet();
+  }, [params.id]);
 
-  const handleCommentSubmit = async () => {
-    if (!newComment.trim()) return
-
-    setIsSubmittingComment(true)
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    setError("");
 
     try {
-      const response = await fetch(`/api/snippets/${params.id}/comments`, {
-        method: "POST",
+      const response = await fetch(`/api/snippets/${params.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content: newComment }),
-      })
+        body: JSON.stringify({
+          title,
+          description,
+          language,
+          code,
+          visibility,
+          tags,
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to add comment")
+        throw new Error(data.message || "Failed to update snippet");
       }
 
-      setComments([data.comment, ...comments])
-      setNewComment("")
+      router.push(`/snippets/${params.id}`);
     } catch (error: any) {
-      console.error("Error adding comment:", error)
-      alert(error.message || "An error occurred while adding your comment")
+      setError(error.message || "An error occurred while updating the snippet");
+      console.error("Error updating snippet:", error);
     } finally {
-      setIsSubmittingComment(false)
+      setIsSaving(false);
     }
-  }
+  };
 
-  const toggleLike = async () => {
-    if (!session) {
-      router.push("/auth/signin")
-      return
+  // Handle adding a new tag
+  const handleAddTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput("");
     }
+  };
 
-    try {
-      const response = await fetch(`/api/snippets/${params.id}/like`, {
-        method: "POST",
-      })
+  // Handle removing a tag
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to like snippet")
-      }
-
-      setIsLiked(data.liked)
-      setLikeCount(data.likeCount)
-    } catch (error: any) {
-      console.error("Error liking snippet:", error)
+  // Handle tag input keydown (add tag on Enter)
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
     }
-  }
-
-  const getVisibilityIcon = () => {
-    switch (snippet?.visibility) {
-      case "public":
-        return <Globe className="h-4 w-4" />
-      case "private":
-        return <Lock className="h-4 w-4" />
-      default:
-        return <Share2 className="h-4 w-4" />
-    }
-  }
+  };
 
   if (isLoading) {
     return (
       <div className="container flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
-
-  if (error) {
-    return (
-      <div className="container py-8">
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-        <Button className="mt-4" onClick={() => router.push("/explore")}>
-          Back to Explore
-        </Button>
-      </div>
-    )
-  }
-
-  if (!snippet) {
-    return (
-      <div className="container py-8">
-        <Alert>
-          <AlertDescription>Snippet not found</AlertDescription>
-        </Alert>
-        <Button className="mt-4" onClick={() => router.push("/explore")}>
-          Back to Explore
-        </Button>
-      </div>
-    )
-  }
-
-  const isOwner = session?.user?.id === snippet.author?._id
 
   return (
-    <div className="container py-[150px]">
-      <div className="grid gap-6">
-        {/* Snippet Header */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">{snippet.title}</h1>
-            <div className="flex items-center gap-3 mt-2">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={snippet.author?.image || ""} alt={snippet.author?.name || "User"} />
-                  <AvatarFallback>{snippet.author?.name?.charAt(0) || "U"}</AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium">{snippet.author?.name}</span>
-              </div>
-              <span className="text-sm text-muted-foreground">
-                {snippet.createdAt && formatDistanceToNow(new Date(snippet.createdAt), { addSuffix: true })}
-              </span>
-              <Badge variant="outline" className="flex items-center gap-1">
-                {getVisibilityIcon()}
-                {snippet.visibility.charAt(0).toUpperCase() + snippet.visibility.slice(1)}
-              </Badge>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {isOwner && (
-              <>
-                <Button variant="outline" size="sm" onClick={handleEdit}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleDelete}>
-                  <Trash className="mr-2 h-4 w-4" />
-                  Delete
-                </Button>
-              </>
-            )}
-            <Button variant="outline" size="sm" onClick={copyToClipboard}>
-              {copied ? (
-                <span className="text-green-500">Copied!</span>
-              ) : (
-                <>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copy Code
-                </>
-              )}
-            </Button>
-            <Button variant="outline" size="sm">
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-          </div>
+    <div className="container px-6 py-[120px]">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <Button 
+            variant="ghost" 
+            onClick={() => router.back()}
+            className="group mb-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            Back
+          </Button>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">Edit Snippet</h1>
+          <p className="text-muted-foreground mt-2">Update your code snippet details</p>
         </div>
 
-        {/* Description */}
-        {snippet.description && <div className="text-muted-foreground">{snippet.description}</div>}
-
-        {/* Tags */}
-        {snippet.tags && snippet.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {snippet.tags.map((tag: string) => (
-              <Badge key={tag} variant="secondary">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
 
-        {/* Code */}
-        <Card>
-          <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="text-sm font-medium">
-                {snippet.language.charAt(0).toUpperCase() + snippet.language.slice(1)}
-              </CardTitle>
-            </div>
-            <Button variant="ghost" size="sm" onClick={copyToClipboard}>
-              <Copy className="h-4 w-4" />
-            </Button>
+        <Card className="border shadow-lg dark:shadow-blue-900/10 overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 h-1"></div>
+          <CardHeader className="border-b">
+            <CardTitle className="flex items-center">
+              <Code className="mr-2 h-5 w-5 text-blue-500" />
+              Edit Snippet
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono">{snippet.code}</pre>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center">
-                <Eye className="mr-1 h-4 w-4" />
-                {snippet.views || 0}
-              </div>
-              <div className="flex items-center">
-                <MessageSquare className="mr-1 h-4 w-4" />
-                {comments.length}
-              </div>
-            </div>
-            <Button
-              variant={isLiked ? "default" : "ghost"}
-              size="sm"
-              onClick={toggleLike}
-              className={isLiked ? "bg-primary/10 hover:bg-primary/20 text-primary" : ""}
-            >
-              <Heart className={`mr-1 h-4 w-4 ${isLiked ? "fill-primary" : ""}`} />
-              {likeCount}
-            </Button>
-          </CardFooter>
-        </Card>
+          <CardContent className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Title field */}
+                <div className="space-y-2">
+                  <label htmlFor="title" className="text-sm font-medium">
+                    Title
+                  </label>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="My awesome code snippet"
+                    required
+                    className="shadow-sm"
+                  />
+                </div>
 
-        {/* Comments and Version History */}
-        <Tabs defaultValue="comments">
-          <TabsList>
-            <TabsTrigger value="comments">Comments ({comments.length})</TabsTrigger>
-            <TabsTrigger value="history">Version History ({snippet.previousVersions?.length || 0})</TabsTrigger>
-          </TabsList>
+                {/* Language field */}
+                <div className="space-y-2">
+                  <label htmlFor="language" className="text-sm font-medium">
+                    Language
+                  </label>
+                  <Select
+                    value={language}
+                    onValueChange={setLanguage}
+                  >
+                    <SelectTrigger className="shadow-sm">
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {languageOptions.map((lang) => (
+                        <SelectItem key={lang} value={lang}>
+                          {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-          <TabsContent value="comments">
-            {/* Add Comment */}
-            {session ? (
-              <div className="mb-6">
+              {/* Description field */}
+              <div className="space-y-2">
+                <label htmlFor="description" className="text-sm font-medium">
+                  Description
+                </label>
                 <Textarea
-                  placeholder="Add a comment..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  className="mb-2"
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Brief description of what this code does"
+                  className="resize-none min-h-[80px] shadow-sm"
                 />
-                <Button onClick={handleCommentSubmit} disabled={isSubmittingComment || !newComment.trim()}>
-                  {isSubmittingComment ? (
+                <p className="text-xs text-muted-foreground">
+                  Optional: Provide context about your snippet
+                </p>
+              </div>
+
+              {/* Code field */}
+              <div className="space-y-2">
+                <label htmlFor="code" className="text-sm font-medium">
+                  Code
+                </label>
+                <div className="rounded-md border overflow-hidden shadow-sm focus-within:ring-1 focus-within:ring-blue-500">
+                  <div className="bg-muted p-2 flex items-center justify-between border-b">
+                    <div className="flex items-center gap-1">
+                      <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                      <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
+                      <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <span className="text-xs text-muted-foreground">{language || "code"}</span>
+                  </div>
+                  <Textarea
+                    id="code"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="Paste your code here"
+                    className="font-mono resize-none min-h-[300px] border-0 focus-visible:ring-0 rounded-none"
+                  />
+                </div>
+              </div>
+
+              {/* Tags input */}
+              <div className="space-y-2">
+                <label htmlFor="tags" className="text-sm font-medium">
+                  Tags
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2 min-h-8">
+                  {tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="px-2 py-1 text-sm bg-blue-500/10 hover:bg-blue-500/20 transition-colors">
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="ml-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Input
+                    id="tagInput"
+                    placeholder="Add tags (e.g., algorithm, react)"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagInputKeyDown}
+                    className="shadow-sm"
+                  />
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    onClick={handleAddTag} 
+                    disabled={!tagInput.trim()}
+                    className="shrink-0"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Press Enter to add a tag
+                </p>
+              </div>
+
+              {/* Visibility options */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium">
+                  Visibility
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                    visibility === "public" 
+                      ? "ring-2 ring-blue-500 bg-blue-500/5" 
+                      : "hover:bg-muted/50"
+                  }`}
+                  onClick={() => setVisibility("public")}>
+                    <div className="flex items-center mb-2">
+                      <Globe className="h-4 w-4 mr-2 text-blue-500" />
+                      <span className="font-medium">Public</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Visible to everyone and appears in search results
+                    </p>
+                  </div>
+                  <div className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                    visibility === "unlisted" 
+                      ? "ring-2 ring-blue-500 bg-blue-500/5" 
+                      : "hover:bg-muted/50"
+                  }`}
+                  onClick={() => setVisibility("unlisted")}>
+                    <div className="flex items-center mb-2">
+                      <Users className="h-4 w-4 mr-2 text-purple-500" />
+                      <span className="font-medium">Unlisted</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Anyone with the link can view, but not searchable
+                    </p>
+                  </div>
+                  <div className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                    visibility === "private" 
+                      ? "ring-2 ring-blue-500 bg-blue-500/5" 
+                      : "hover:bg-muted/50"
+                  }`}
+                  onClick={() => setVisibility("private")}>
+                    <div className="flex items-center mb-2">
+                      <Lock className="h-4 w-4 mr-2 text-amber-500" />
+                      <span className="font-medium">Private</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Only visible to you
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-6 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.back()}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={isSaving}
+                  className="bg-blue-500 hover:bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                >
+                  {isSaving ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Posting...
+                      Saving...
                     </>
                   ) : (
-                    "Post Comment"
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Changes
+                    </>
                   )}
                 </Button>
               </div>
-            ) : (
-              <div className="mb-6 p-4 bg-muted rounded-md text-center">
-                <p className="mb-2">Sign in to leave a comment</p>
-                <Button onClick={() => router.push("/auth/signin")}>Sign In</Button>
-              </div>
-            )}
-
-            {/* Comments List */}
-            {comments.length > 0 ? (
-              <div className="space-y-4">
-                {comments.map((comment) => (
-                  <Card key={comment._id}>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={comment.author?.image || ""} alt={comment.author?.name || "User"} />
-                          <AvatarFallback>{comment.author?.name?.charAt(0) || "U"}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <span className="text-sm font-medium">{comment.author?.name}</span>
-                          <span className="text-xs text-muted-foreground ml-2">
-                            {comment.createdAt && formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
-                          </span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm">{comment.content}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">No comments yet. Be the first to comment!</div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="history">
-            {snippet.previousVersions && snippet.previousVersions.length > 0 ? (
-              <div className="space-y-4">
-                {snippet.previousVersions.map((version: any, index: number) => (
-                  <Card key={index}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Version {version.version}</CardTitle>
-                      <CardDescription>
-                        {version.updatedAt && format(new Date(version.updatedAt), "PPpp")}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono max-h-60">
-                        {version.code}
-                      </pre>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">No previous versions available.</div>
-            )}
-          </TabsContent>
-        </Tabs>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
-  )
+  );
 }

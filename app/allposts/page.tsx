@@ -54,6 +54,7 @@ function SnippetCard({ snippet}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [likes, setLikes] = useState(snippet.likes || 0);
   const [hasLiked, setHasLiked] = useState(false);
+  
 
   const handleView = () => {
     router.push(`/snippets/${snippet._id}`);

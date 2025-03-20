@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useState, useEffect, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react"
+import { useState, useEffect} from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -315,7 +315,7 @@ export default function ProfilePage() {
                       <div className="p-4 rounded-full bg-blue-100 dark:bg-blue-900/30">
                         <Loader2 className="h-10 w-10 text-blue-500" />
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 text-lg">You haven't created any snippets yet.</p>
+                      <p className="text-gray-600 dark:text-gray-300 text-lg">You haven&apos;t created any snippets yet.</p>
                       <Button 
                         onClick={() => router.push("/snippets/new")}
                         className="mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md">
@@ -341,7 +341,7 @@ export default function ProfilePage() {
                       <div className="p-4 rounded-full bg-amber-100 dark:bg-amber-900/30">
                         <Globe className="h-10 w-10 text-amber-500" />
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 text-lg">You don't have any public snippets.</p>
+                      <p className="text-gray-600 dark:text-gray-300 text-lg">You don&apos;t have any public snippets.</p>
                       <Button 
                         onClick={() => router.push("/snippets/new")}
                         className="mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md">
@@ -367,7 +367,7 @@ export default function ProfilePage() {
                       <div className="p-4 rounded-full bg-purple-100 dark:bg-purple-900/30">
                         <Lock className="h-10 w-10 text-purple-500" />
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 text-lg">You don't have any private snippets.</p>
+                      <p className="text-gray-600 dark:text-gray-300 text-lg">You don&apos;t have any private snippets.</p>
                       <Button 
                         onClick={() => router.push("/snippets/new")}
                         className="mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md">

@@ -1,11 +1,69 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import { CodeIcon, Share2Icon, UsersIcon, GithubIcon, TwitterIcon, LinkedinIcon, HeartIcon } from "lucide-react";
 import Link from "next/link";
 import FeaturedSnippets from "@/components/featured-snippets";
+import { useEffect } from "react";
 
 export default function Home() {
+  // Add the grid style directly to the component
+  useEffect(() => {
+    // Add the CSS for grid animation directly to the document
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes gridAnimation {
+        0% { background-position: 0 0; }
+        100% { background-position: 50px 50px; }
+      }
+      
+      .grid-background-light {
+        position: fixed;
+        inset: 0;
+        background-image: 
+          linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+        background-size: 25px 25px;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.4;
+        animation: gridAnimation 20s linear infinite;
+      }
+      
+      .grid-background-dark {
+        position: fixed;
+        inset: 0;
+        background-image: 
+          linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 25px 25px;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.3;
+        animation: gridAnimation 20s linear infinite;
+      }
+      
+      :root.dark .grid-background-light {
+        display: none;
+      }
+      
+      :root:not(.dark) .grid-background-dark {
+        display: none;
+      }
+    `;
+    
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
-    <div className="relative container mx-auto px-4 py-12 min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-white overflow-hidden transition-colors">
+    <div className="relative container mx-auto px-4 md:py-2 py-12 min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-white overflow-hidden transition-colors">
+      {/* Animated Grid Backgrounds - Added directly in the DOM for better visibility */}
+      <div id="grid-background-light" className="grid-background-light"></div>
+      <div id="grid-background-dark" className="grid-background-dark"></div>
+      
       {/* Torchlight Effect (Dark Mode) */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[800px] h-[500px] bg-gradient-radial from-blue-500/40 via-transparent to-transparent blur-3xl opacity-70 dark:block hidden" />
       
@@ -13,7 +71,7 @@ export default function Home() {
       <section className="relative py-12 md:py-24 lg:py-32 flex flex-col items-center text-center z-10">
         <div className="space-y-6 max-w-3xl">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-blue-500 via-gray-800 to-purple-500 dark:from-blue-400 dark:via-white dark:to-purple-400 text-transparent bg-clip-text">
-            Share Code Snippets. <span className="text-blue-600 dark:text-blue-500">Collaborate.</span> Build Together.
+            Share Code Snippets. <span className="text-blue-600 dark:text-blue-500">Collaborate</span> Build Together.
           </h1>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-[700px] mx-auto">
             Create, store, and share your code snippets with syntax highlighting, comments, and version history.

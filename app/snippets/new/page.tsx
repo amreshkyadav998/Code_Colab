@@ -126,7 +126,7 @@ export default function NewSnippet() {
     }
 
     return (
-        <div className="container max-w-4xl py-8">
+        <div className="container md:max-w-4xl md:py-[120px] md:ml-[192px] py-[120px] px-6 md:px-1 max-w-xl">
             <Card>
                 <CardHeader>
                     <CardTitle>Create New Snippet</CardTitle>

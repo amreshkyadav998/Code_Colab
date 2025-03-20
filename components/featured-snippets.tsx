@@ -79,7 +79,7 @@ export default function FeaturedSnippets() {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {featuredSnippets.map((snippet) => (
-        <Card key={snippet.id} className="overflow-hidden border-none shadow-xl bg-gradient-to-br from-gray-400 to-indigo-600 dark:from-slate-900 dark:to-gray-800 rounded-2xl">
+        <Card key={snippet.id} className="overflow-hidden border-none shadow-xl bg-gradient-to-br from-gray-300 to-blue-950 dark:from-slate-900 dark:to-gray-800 rounded-2xl">
           <CardHeader className="pb-2">
             <div className="flex justify-between items-start">
               <CardTitle className="text-lg font-bold text-white">

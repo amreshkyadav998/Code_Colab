@@ -12,7 +12,7 @@ module.exports = {
         lightBg: "#e3eaf2", // Light theme background (slightly gray)
         darkBg: "#0f172a", // Dark theme background (not completely black)
         navbarLight: "#f8f9fa", // Light theme navbar (very light gray)
-        navbarDark: "#1e293b", // Dark theme navbar (blue-gray)
+        navbarDark: "#030720",
         textLight: "#333333", // Dark text for light mode
         textDark: "#e0e0e0", // Light text for dark mode
       },
@@ -20,3 +20,5 @@ module.exports = {
   },
   plugins: [require("tailwindcss-animate")],
 };
+
+ // navbarDark: "#1e293b", // Dark theme navbar (blue-gray)
