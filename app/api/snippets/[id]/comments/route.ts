@@ -2,18 +2,20 @@ import { connectToDatabase } from "@/lib/mongodb"
 import { Comment } from "@/models/comment"
 import { Snippet } from "@/models/snippet"
 import { getServerSession } from "next-auth/next"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { authOptions } from "@/lib/auth-options"
 import mongoose from "mongoose"
-import { NextRequest } from "next/server"
 
-type RouteParams = {
+interface RouteSegmentProps {
   params: {
     id: string;
   }
 }
 
-export async function POST(request: NextRequest, context: RouteParams) {
+export async function POST(
+  request: NextRequest,
+  props: RouteSegmentProps
+) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -21,7 +23,7 @@ export async function POST(request: NextRequest, context: RouteParams) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
-    const snippetId = context.params.id;
+    const snippetId = props.params.id;
     const { content } = await request.json();
 
     if (!content || !content.trim()) {
