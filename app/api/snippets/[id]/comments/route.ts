@@ -7,12 +7,13 @@ import { authOptions } from "@/lib/auth-options"
 import mongoose from "mongoose"
 import { NextRequest } from "next/server"
 
-// Fix: Use the correct type definition for the route handler
-export async function POST(
-  request: NextRequest,
-  // Use the exact type expected by Next.js for route handlers
-  { params }: { params: { id: string } }
-) {
+type RouteParams = {
+  params: {
+    id: string;
+  }
+}
+
+export async function POST(request: NextRequest, context: RouteParams) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -20,7 +21,7 @@ export async function POST(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
-    const snippetId = params.id;
+    const snippetId = context.params.id;
     const { content } = await request.json();
 
     if (!content || !content.trim()) {
