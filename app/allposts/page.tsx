@@ -362,7 +362,7 @@ export default function SnippetFeedPage() {
         setSnippets(data.snippets || []);
         console.log("Snippets loaded:", data.snippets);
       } else {
-        console.error("Failed to fetch snippets:", data.message);
+        console.error("Failed to fetch snippets::", data.message);
         setSnippets([]);
       }
     } catch (error) {
