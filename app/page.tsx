@@ -69,7 +69,7 @@ export default function Home() {
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[800px] h-[500px] bg-gradient-radial from-blue-500/40 via-transparent to-transparent blur-3xl opacity-70 dark:block hidden" />
       
       {/* Hero Section - Added max-width to constrain content while background spans full width */}
-      <section className="relative py-12 md:py-24 lg:py-32 flex flex-col items-center text-center z-10 w-full">
+      <section className="relative py-20 md:py-24 lg:py-32 flex flex-col items-center text-center z-10 w-full">
         <div className="space-y-6 max-w-3xl mx-auto px-4">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-blue-500 via-gray-800 to-purple-500 dark:from-blue-400 dark:via-white dark:to-purple-400 text-transparent bg-clip-text">
             Share Code Snippets. <span className="text-blue-600 dark:text-blue-500">Collaborate</span> Build Together.
