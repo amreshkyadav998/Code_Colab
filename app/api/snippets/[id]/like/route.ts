@@ -1,63 +1,64 @@
-import { connectToDatabase } from "@/lib/mongodb"
-import { Snippet } from "@/models/snippet"
-import { getServerSession } from "next-auth/next"
-import { NextResponse } from "next/server"
-import { authOptions } from "@/lib/auth-options"
-import mongoose from "mongoose"
+import { connectToDatabase } from "@/lib/mongodb";
+import { Snippet } from "@/models/snippet";
+import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "@/lib/auth-options";
+import mongoose from "mongoose";
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const snippetId = params.id
-    const userId = (session.user as { id: string }).id  // ✅ Fix: Explicitly assert session.user has an id
+    // Extract snippetId from the request URL
+    const urlParts = request.nextUrl.pathname.split("/");
+    const snippetId = urlParts[urlParts.length - 2]; // Extract ID from "/api/snippets/[id]/like"
 
-    if (!mongoose.Types.ObjectId.isValid(snippetId)) {
-      return NextResponse.json({ message: "Invalid snippet ID" }, { status: 400 })
+    console.log("Extracted snippetId:", snippetId); // Debugging
+
+    if (!snippetId || !mongoose.Types.ObjectId.isValid(snippetId)) {
+      return NextResponse.json({ message: "Invalid snippet ID", snippetId }, { status: 400 });
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
     // Find snippet
-    const snippet = await Snippet.findById(snippetId)
+    const snippet = await Snippet.findById(snippetId);
     if (!snippet) {
-      return NextResponse.json({ message: "Snippet not found" }, { status: 404 })
+      return NextResponse.json({ message: "Snippet not found" }, { status: 404 });
     }
 
-    // Check if user already liked the snippet
-    const alreadyLiked = snippet.likedBy.includes(userId)
+    const userId = (session.user as { id: string }).id;
+    const alreadyLiked = snippet.likedBy.includes(userId);
 
     if (alreadyLiked) {
-      // Unlike
       await Snippet.findByIdAndUpdate(snippetId, {
         $pull: { likedBy: userId },
         $inc: { likes: -1 },
-      })
+      });
 
       return NextResponse.json({
         message: "Snippet unliked successfully",
         liked: false,
         likeCount: snippet.likes - 1,
-      })
+      });
     } else {
-      // Like
       await Snippet.findByIdAndUpdate(snippetId, {
         $addToSet: { likedBy: userId },
         $inc: { likes: 1 },
-      })
+      });
 
       return NextResponse.json({
         message: "Snippet liked successfully",
         liked: true,
         likeCount: snippet.likes + 1,
-      })
+      });
     }
   } catch (error) {
-    console.error("Like toggle error:", error)
-    return NextResponse.json({ message: "An error occurred while processing your request" }, { status: 500 })
+    console.error("Like toggle error:", error);
+    return NextResponse.json({ message: "An error occurred while processing your request" }, { status: 500 });
   }
 }

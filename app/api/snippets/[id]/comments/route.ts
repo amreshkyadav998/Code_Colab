@@ -1,63 +1,64 @@
-import { connectToDatabase } from "@/lib/mongodb"
-import { Comment } from "@/models/comment"
-import { Snippet } from "@/models/snippet"
-import { getServerSession } from "next-auth/next"
-import { NextRequest, NextResponse } from "next/server"
-import { authOptions } from "@/lib/auth-options"
-import mongoose from "mongoose"
+import { connectToDatabase } from "@/lib/mongodb";
+import { Comment } from "@/models/comment";
+import { Snippet } from "@/models/snippet";
+import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "@/lib/auth-options";
+import mongoose from "mongoose";
 
-interface RouteSegmentProps {
-  params: {
-    id: string;
-  }
-}
-
-export async function POST(
-  request: NextRequest,
-  props: RouteSegmentProps
-) {
+export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const snippetId = props.params.id;
+    // Extract snippetId from request URL
+    const snippetId = request.nextUrl.pathname.split("/").at(-2); // Gets [id] from "/api/snippets/[id]/comments"
+
+    if (!snippetId || !mongoose.Types.ObjectId.isValid(snippetId)) {
+      return NextResponse.json({ message: "Invalid snippet ID" }, { status: 400 });
+    }
+
     const { content } = await request.json();
 
     if (!content || !content.trim()) {
-      return NextResponse.json({ message: "Comment content is required" }, { status: 400 })
+      return NextResponse.json({ message: "Comment content is required" }, { status: 400 });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(snippetId)) {
-      return NextResponse.json({ message: "Invalid snippet ID" }, { status: 400 })
-    }
-
-    await connectToDatabase()
+    await connectToDatabase();
 
     // Check if snippet exists
-    const snippet = await Snippet.findById(snippetId)
+    const snippet = await Snippet.findById(snippetId);
     if (!snippet) {
-      return NextResponse.json({ message: "Snippet not found" }, { status: 404 })
+      return NextResponse.json({ message: "Snippet not found" }, { status: 404 });
     }
 
     // Explicitly assert session.user to include id
-    const userId = (session.user as { id: string }).id
+    const userId = (session.user as { id: string }).id;
 
     // Create comment
     const comment = await Comment.create({
       content,
       author: userId,
       snippet: snippetId,
-    })
+    });
 
     // Populate author details
-    const populatedComment = await Comment.findById(comment._id).populate("author", "name image").lean()
+    const populatedComment = await Comment.findById(comment._id)
+      .populate("author", "name image")
+      .lean();
 
-    return NextResponse.json({ message: "Comment added successfully", comment: populatedComment }, { status: 201 })
+    return NextResponse.json(
+      { message: "Comment added successfully", comment: populatedComment },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Comment creation error:", error)
-    return NextResponse.json({ message: "An error occurred while adding the comment" }, { status: 500 })
+    console.error("Comment creation error:", error);
+    return NextResponse.json(
+      { message: "An error occurred while adding the comment" },
+      { status: 500 }
+    );
   }
 }
