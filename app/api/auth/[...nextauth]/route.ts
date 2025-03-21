@@ -8,6 +8,7 @@ import bcrypt from "bcryptjs"
 const handler = NextAuth({
   providers: [
     GithubProvider({
+      // github 
       clientId: process.env.GITHUB_ID || "",
       clientSecret: process.env.GITHUB_SECRET || "",
     }),
