@@ -355,6 +355,7 @@ export default function SnippetFeedPage() {
       // Choose endpoint based on whether user is logged in
       const endpoint = `/api/snippets?sort=${filter}`;
       const response = await fetch(endpoint);
+      console.log("response",response)
       const data = await response.json();
       
       if (response.ok) {

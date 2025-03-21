@@ -6,15 +6,15 @@ import { NextRequest, NextResponse } from "next/server"
 import { authOptions } from "@/lib/auth-options"
 import mongoose from "mongoose"
 
-// interface RouteSegmentProps {
-//   params: {
-//     id: string;
-//   }
-// }
+interface RouteSegmentProps {
+  params: {
+    id: string;
+  }
+}
 
 export async function POST(
   request: NextRequest,
-  // props: RouteSegmentProps
+  props: RouteSegmentProps
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -23,24 +23,24 @@ export async function POST(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
-    // const snippetId = props.params.id;
+    const snippetId = props.params.id;
     const { content } = await request.json();
 
     if (!content || !content.trim()) {
       return NextResponse.json({ message: "Comment content is required" }, { status: 400 })
     }
 
-    // if (!mongoose.Types.ObjectId.isValid(snippetId)) {
-    //   return NextResponse.json({ message: "Invalid snippet ID" }, { status: 400 })
-    // }
+    if (!mongoose.Types.ObjectId.isValid(snippetId)) {
+      return NextResponse.json({ message: "Invalid snippet ID" }, { status: 400 })
+    }
 
     await connectToDatabase()
 
     // Check if snippet exists
-    // const snippet = await Snippet.findById(snippetId)
-    // if (!snippet) {
-    //   return NextResponse.json({ message: "Snippet not found" }, { status: 404 })
-    // }
+    const snippet = await Snippet.findById(snippetId)
+    if (!snippet) {
+      return NextResponse.json({ message: "Snippet not found" }, { status: 404 })
+    }
 
     // Explicitly assert session.user to include id
     const userId = (session.user as { id: string }).id
@@ -49,7 +49,7 @@ export async function POST(
     const comment = await Comment.create({
       content,
       author: userId,
-      // snippet: snippetId,
+      snippet: snippetId,
     })
 
     // Populate author details
