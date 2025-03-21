@@ -19,7 +19,7 @@ CodeColab is a collaborative platform where users can post, edit, and share code
 ## Installation & Setup
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/codecolab.git
+   https://github.com/amreshkyadav998/Code_Colab.git
    cd codecolab
    ```
 2. Install dependencies:
