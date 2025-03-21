@@ -23,19 +23,11 @@ const languageOptions = [
     { value: "java", label: "Java" },
     { value: "csharp", label: "C#" },
     { value: "cpp", label: "C++" },
-    { value: "php", label: "PHP" },
-    { value: "ruby", label: "Ruby" },
     { value: "go", label: "Go" },
-    { value: "rust", label: "Rust" },
-    { value: "swift", label: "Swift" },
     { value: "kotlin", label: "Kotlin" },
     { value: "html", label: "HTML" },
     { value: "css", label: "CSS" },
     { value: "sql", label: "SQL" },
-    { value: "bash", label: "Bash" },
-    { value: "json", label: "JSON" },
-    { value: "yaml", label: "YAML" },
-    { value: "markdown", label: "Markdown" },
 ]
 
 export default function NewSnippet() {
@@ -170,7 +162,7 @@ export default function NewSnippet() {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {languageOptions.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
+                                            <SelectItem className="bg-gray-900 text-white cursor-pointer border border-black" key={option.value} value={option.value}>
                                                 {option.label}
                                             </SelectItem>
                                         ))}
