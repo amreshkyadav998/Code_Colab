@@ -35,7 +35,7 @@ export default function Home() {
         background-image: 
           linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-        background-size: 25px 25px;
+        background-size: 4px 25px;
         pointer-events: none;
         z-index: 0;
         opacity: 0.3;
@@ -59,7 +59,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative container mx-auto px-4 md:py-2 py-12 min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-white overflow-hidden transition-colors">
+    // Changed from "container mx-auto px-4" to "w-full" to make it full width
+    <div className="relative w-full min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-white overflow-hidden transition-colors">
       {/* Animated Grid Backgrounds - Added directly in the DOM for better visibility */}
       <div id="grid-background-light" className="grid-background-light"></div>
       <div id="grid-background-dark" className="grid-background-dark"></div>
@@ -67,9 +68,9 @@ export default function Home() {
       {/* Torchlight Effect (Dark Mode) */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[800px] h-[500px] bg-gradient-radial from-blue-500/40 via-transparent to-transparent blur-3xl opacity-70 dark:block hidden" />
       
-      {/* Hero Section */}
-      <section className="relative py-12 md:py-24 lg:py-32 flex flex-col items-center text-center z-10">
-        <div className="space-y-6 max-w-3xl">
+      {/* Hero Section - Added max-width to constrain content while background spans full width */}
+      <section className="relative py-12 md:py-24 lg:py-32 flex flex-col items-center text-center z-10 w-full">
+        <div className="space-y-6 max-w-3xl mx-auto px-4">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-blue-500 via-gray-800 to-purple-500 dark:from-blue-400 dark:via-white dark:to-purple-400 text-transparent bg-clip-text">
             Share Code Snippets. <span className="text-blue-600 dark:text-blue-500">Collaborate</span> Build Together.
           </h1>
@@ -87,9 +88,9 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Features Section */}
-      <section className="relative py-12 md:py-24 z-10">
-        <div className="container px-4 md:px-6 grid gap-8 lg:grid-cols-3 lg:gap-16">
+      {/* Features Section - Added max-width to constrain content while background spans full width */}
+      <section className="relative py-12 md:py-24 z-10 w-full">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 grid gap-8 lg:grid-cols-3 lg:gap-16">
           {[
             { icon: CodeIcon, title: "Syntax Highlighting", desc: "Support for over 100 programming languages with beautiful syntax highlighting." },
             { icon: Share2Icon, title: "Easy Sharing", desc: "Share your snippets with a unique link or embed them directly in your projects." },
@@ -106,16 +107,16 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Featured Snippets */}
-      <section className="relative py-12 z-10">
-        <div className="container px-4 md:px-6">
+      {/* Featured Snippets - Added max-width to constrain content while background spans full width */}
+      <section className="relative py-12 z-10 w-full">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           <h2 className="text-3xl font-bold tracking-tighter mb-8 text-center text-gray-900 dark:text-white">Featured Snippets</h2>
           <FeaturedSnippets />
         </div>
       </section>
       
-      {/* Footer Section */}
-      <footer className="relative mt-24 bg-gray-100 dark:bg-gray-800 rounded-t-3xl z-10">
+      {/* Footer Section - Made full width but kept content constrained */}
+      <footer className="relative mt-24 bg-gray-100 dark:bg-gray-800 rounded-t-3xl z-10 w-full">
         {/* Decorative Wave */}
         <div className="absolute -top-8 left-0 right-0 h-8 overflow-hidden">
           <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-24 transform rotate-180">
@@ -127,7 +128,7 @@ export default function Home() {
           </svg>
         </div>
         
-        <div className="container mx-auto px-4 pt-16 pb-8">
+        <div className="max-w-7xl mx-auto px-4 pt-16 pb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-16">
             {/* Brand Section */}
             <div className="space-y-4">
