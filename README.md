@@ -2,6 +2,9 @@
 
 CodeColab is a collaborative platform where users can post, edit, and share code snippets. Other users can like and comment on these snippets. The platform supports both light and dark themes and utilizes authentication for user management.
 
+
+## Demo
+[!>[Watch the video]](https://drive.google.com/file/d/1ND4r0Maf9xmxlZ5jJg9PLnYV17wCfE9E/view?usp=drive_link)
 ## Features
 - **Post Code Snippets**: Share code snippets with syntax highlighting.
 - **Edit Posts**: Users can edit their own posts.
@@ -51,8 +54,6 @@ CodeColab is a collaborative platform where users can post, edit, and share code
 - **`POST /api/snippets/:id/like`** - Like a snippet
 - **`POST /api/snippets/:id/comment`** - Add a comment to a snippet
 
-## Demo
-[![Watch the video](https://img.youtube.com/vi/your_video_id/0.jpg)](https://www.youtube.com/watch?v=your_video_id)
 
 ## License
 This project is licensed under the MIT License.
