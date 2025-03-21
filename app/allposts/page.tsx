@@ -219,38 +219,27 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
       </CardContent>
 
       <CardFooter className="border-t border-gray-200 dark:border-gray-700 pt-4">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-1 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-              onClick={handleView}
-            >
-              <Eye className="h-4 w-4" /> View
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-1 text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-              onClick={handleCommentToggle}
-            >
-              <MessageCircle className="h-4 w-4" /> {comments.length > 0 ? comments.length : ""} Comments
-            </Button>
-          </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-            onClick={handleLike}
-            disabled={hasLiked}
-          >
-            <ThumbsUp className={`h-4 w-4 ${hasLiked ? "fill-current" : ""}`} /> {likes > 0 ? likes : ""}
-          </Button>
-        </div>
-      </CardFooter>
+  <div className="flex items-center justify-between w-full">
+    <Button
+      variant="ghost"
+      size="sm"
+      className="flex items-center gap-1 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+      onClick={handleView}
+    >
+      <Eye className="h-4 w-4" /> View
+    </Button>
+    
+    <Button
+      variant="ghost"
+      size="sm"
+      className="flex items-center gap-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+      onClick={handleLike}
+      disabled={hasLiked}
+    >
+      <ThumbsUp className={`h-4 w-4 ${hasLiked ? "fill-current" : ""}`} /> {likes > 0 ? likes : ""}
+    </Button>
+  </div>
+</CardFooter>
 
       {/* Comments Section */}
       {showComments && (
