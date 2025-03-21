@@ -134,7 +134,7 @@ export default function Home() {
               <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">CodeSnippets</h3>
               <p className="text-gray-600 dark:text-gray-400">The modern platform for developers to share and discover code snippets.</p>
               <div className="flex space-x-4">
-                <a href="#" className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
+                <a href="https://github.com/amreshkyadav998" className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
                   <GithubIcon className="h-6 w-6" />
                 </a>
                 <a href="https://x.com/amreshky997?s=08" className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
@@ -199,7 +199,7 @@ export default function Home() {
             <div className="flex items-center space-x-1">
               <span>© {new Date().getFullYear()} CodeSnippets. Made with</span>
               <HeartIcon className="h-4 w-4 text-red-500" />
-              <span>for developers.</span>
+              <span>for developers. By Amresh Yadav</span>
             </div>
             <div className="flex mt-4 md:mt-0 space-x-6">
               <Link href="/privacy" className="hover:text-blue-500 transition-colors">Privacy Policy</Link>
