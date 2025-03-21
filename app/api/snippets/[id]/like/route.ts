@@ -13,11 +13,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Extract snippetId from the request URL
+    // Extracting snippetId from the request URL
     const urlParts = request.nextUrl.pathname.split("/");
     const snippetId = urlParts[urlParts.length - 2]; // Extract ID from "/api/snippets/[id]/like"
 
-    console.log("Extracted snippetId:", snippetId); // Debugging
+    console.log("Extracted snippetId:", snippetId); 
 
     if (!snippetId || !mongoose.Types.ObjectId.isValid(snippetId)) {
       return NextResponse.json({ message: "Invalid snippet ID", snippetId }, { status: 400 });

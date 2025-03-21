@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useState, useEffect} from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -33,11 +33,10 @@ interface EnhancedSnippetCardProps {
   onDelete: () => void;
 }
 
-// Enhanced SnippetCard component with visible action buttons
 function EnhancedSnippetCard({ snippet, onDelete }: EnhancedSnippetCardProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const handleDelete = async (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this snippet?")) {
@@ -75,7 +74,6 @@ function EnhancedSnippetCard({ snippet, onDelete }: EnhancedSnippetCardProps) {
     });
   };
 
-  // Function to get language color
   const getLanguageColor = (lang: string) => {
     const colors: Record<string, string> = {
       javascript: "bg-yellow-500",
@@ -91,7 +89,7 @@ function EnhancedSnippetCard({ snippet, onDelete }: EnhancedSnippetCardProps) {
       rust: "bg-orange-600",
     };
     return colors[lang.toLowerCase()] || "bg-gray-500";
-  };  
+  };
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 dark:bg-gray-800 bg-white border-gray-200 dark:border-gray-700">
@@ -102,7 +100,7 @@ function EnhancedSnippetCard({ snippet, onDelete }: EnhancedSnippetCardProps) {
             {snippet.language}
           </Badge>
         </div>
-        
+
         {/* Visibility Icon */}
         <div className="absolute top-2 right-2">
           <TooltipProvider>
@@ -136,21 +134,20 @@ function EnhancedSnippetCard({ snippet, onDelete }: EnhancedSnippetCardProps) {
       <CardContent>
         <div className="space-y-4">
           {/* Tags */}
-          {/* Tags */}
-{snippet.tags && snippet.tags.length > 0 && (
-  <div className="flex flex-wrap gap-1">
-    {snippet.tags.slice(0, 3).map((tag: string, index: number) => (
-      <Badge key={index} variant="outline" className="text-xs bg-transparent">
-        <Tag className="h-3 w-3 mr-1" /> {tag}
-      </Badge>
-    ))}
-    {snippet.tags.length > 3 && (
-      <Badge variant="outline" className="text-xs bg-transparent">
-        +{snippet.tags.length - 3}
-      </Badge>
-    )}
-  </div>
-)}
+          {snippet.tags && snippet.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {snippet.tags.slice(0, 3).map((tag: string, index: number) => (
+                <Badge key={index} variant="outline" className="text-xs bg-transparent">
+                  <Tag className="h-3 w-3 mr-1" /> {tag}
+                </Badge>
+              ))}
+              {snippet.tags.length > 3 && (
+                <Badge variant="outline" className="text-xs bg-transparent">
+                  +{snippet.tags.length - 3}
+                </Badge>
+              )}
+            </div>
+          )}
 
           {/* Date */}
           <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -261,11 +258,7 @@ export default function ProfilePage() {
 
   return (
     <div className="relative container mx-auto px-4 py-12 min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-white overflow-hidden transition-colors">
-      
-      {/* Enhanced Torchlight Effect */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[800px] h-[500px] bg-gradient-radial from-blue-500/20 via-transparent to-transparent blur-3xl opacity-70 dark:from-blue-500/40 dark:opacity-80" />
-
-      {/* Profile Header with Glass Morphism */}
       <section className="relative py-12 flex flex-col items-center text-center z-10">
         <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-lg shadow-gray-300/50 dark:shadow-gray-700/30 hover:scale-105 transition-transform duration-300 border border-gray-200/50 dark:border-gray-700/50">
           <Avatar className="h-24 w-24 mx-auto border-4 border-white dark:border-gray-700 shadow-md">
@@ -316,7 +309,7 @@ export default function ProfilePage() {
                         <Loader2 className="h-10 w-10 text-blue-500" />
                       </div>
                       <p className="text-gray-600 dark:text-gray-300 text-lg">You haven&apos;t created any snippets yet.</p>
-                      <Button 
+                      <Button
                         onClick={() => router.push("/snippets/new")}
                         className="mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md">
                         Create Your First Snippet
@@ -342,7 +335,7 @@ export default function ProfilePage() {
                         <Globe className="h-10 w-10 text-amber-500" />
                       </div>
                       <p className="text-gray-600 dark:text-gray-300 text-lg">You don&apos;t have any public snippets.</p>
-                      <Button 
+                      <Button
                         onClick={() => router.push("/snippets/new")}
                         className="mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md">
                         Create Public Snippet
@@ -368,7 +361,7 @@ export default function ProfilePage() {
                         <Lock className="h-10 w-10 text-purple-500" />
                       </div>
                       <p className="text-gray-600 dark:text-gray-300 text-lg">You don&apos;t have any private snippets.</p>
-                      <Button 
+                      <Button
                         onClick={() => router.push("/snippets/new")}
                         className="mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md">
                         Create Private Snippet

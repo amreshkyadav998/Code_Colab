@@ -44,7 +44,6 @@ interface Comment {
   createdAt: string;
 }
 
-// Update the component to use proper typing
 function SnippetCard({ snippet }: { snippet: Snippet }) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -124,7 +123,6 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
     });
   };
 
-  // Function to get language color
   const getLanguageColor = (lang: string) => {
     const colors: Record<string, string> = {
       javascript: "bg-yellow-500",
@@ -343,7 +341,7 @@ export default function SnippetFeedPage() {
   const fetchSnippets = async () => {
     setIsLoading(true);
     try {
-      // Choose endpoint based on whether user is logged in
+      // aisa endpoint choose kro ki dekho user login hai ya nhi
       const endpoint = `/api/snippets?sort=${filter}`;
       const response = await fetch(endpoint);
       console.log("response",response)
@@ -374,11 +372,9 @@ export default function SnippetFeedPage() {
 
   return (
     <div className="relative container mx-auto px-4 py-12 min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-white overflow-hidden transition-colors">
-      
-      {/* Enhanced Torchlight Effect */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[800px] h-[500px] bg-gradient-radial from-blue-500/20 via-transparent to-transparent blur-3xl opacity-70 dark:from-blue-500/40 dark:opacity-80" />
 
-      {/* Hero Header */}
+      {/* Header */}
       <section className="relative py-12 text-center z-10 mb-8">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">

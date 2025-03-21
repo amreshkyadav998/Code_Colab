@@ -7,7 +7,7 @@ import { authOptions } from "@/lib/auth-options";
 import mongoose from "mongoose";
 
 interface RouteHandlerContext {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>;  //bekar error 
 }
 
 export async function GET(request: NextRequest, context: RouteHandlerContext) {

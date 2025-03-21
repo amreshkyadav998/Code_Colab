@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     await connectToDatabase();
     
-    // Get URL parameters for sorting and pagination
+    // URL parameters for sorting and pagination
     const url = new URL(request.url);
     const sortBy = url.searchParams.get("sort") || "latest";
     const page = parseInt(url.searchParams.get("page") || "1");
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
         sortOptions = { createdAt: -1 };
     }
     
-    // Query only public snippets
+    // Query only public snippets (always private bhi hai n)
     const snippets = await Snippet.find({ visibility: "public" })
       .populate("author", "name image _id")
       .sort(sortOptions)

@@ -48,7 +48,6 @@ export default function EditSnippetPage() {
     "ruby", "rust", "php", "swift", "kotlin", "html", "css", "sql", "bash", "json"
   ];
 
-  // Fetch snippet data on component mount
   useEffect(() => {
     const fetchSnippet = async () => {
       setIsLoading(true);
@@ -80,7 +79,7 @@ export default function EditSnippetPage() {
     fetchSnippet();
   }, [params.id]);
 
-  // Handle form submission
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -117,7 +116,7 @@ export default function EditSnippetPage() {
     }
   };
 
-  // Handle adding a new tag
+
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
@@ -125,12 +124,12 @@ export default function EditSnippetPage() {
     }
   };
 
-  // Handle removing a tag
+
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  // Handle tag input keydown (add tag on Enter)
+  //  (add tag on Enter)
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();

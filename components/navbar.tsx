@@ -29,7 +29,7 @@ export default function Navbar() {
           <span className="font-bold text-xl">CodeCollab</span>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop */}
         <nav className="hidden md:flex items-center gap-6">
           <Link href="/explore" className="text-muted-foreground hover:text-foreground transition-colors">
             Explore

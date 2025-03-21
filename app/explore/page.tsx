@@ -1,5 +1,4 @@
 "use client"
-
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -11,7 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Search } from "lucide-react"
 import SnippetCard from "@/components/snippet-card"
 
-// Programming languages options
 const languageOptions = [
   { value: "all", label: "All Languages" },
   { value: "javascript", label: "JavaScript" },
@@ -43,7 +41,6 @@ interface Snippet {
   };
 }
 
-// Popular tags
 const popularTags = ["react", "nextjs", "api", "database", "algorithm", "frontend", "backend", "tutorial", "utility"]
 
 export default function ExplorePage() {
@@ -61,7 +58,6 @@ export default function ExplorePage() {
     pages: 1,
   })
   
-  // This keeps track of when to trigger searches
   const [searchTrigger, setSearchTrigger] = useState(0)
 
   useEffect(() => {
@@ -107,7 +103,6 @@ export default function ExplorePage() {
     e.preventDefault()
     setPagination({ ...pagination, page: 1 })
     
-    // This will trigger the useEffect
     setSearchTrigger(prev => prev + 1)
 
     // Update URL with search params

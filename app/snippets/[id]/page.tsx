@@ -209,15 +209,12 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
 
   const isOwner = session?.user?.id === snippet.author?._id
 
-  // SECTION: Main Component Render
   return (
     <div className="relative min-h-screen pb-20 pt-[100px] overflow-hidden bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-white transition-colors">
-      {/* Stylish background effects */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-radial from-blue-500/10 via-transparent to-transparent blur-3xl opacity-70 dark:opacity-30" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-purple-500/10 via-transparent to-transparent blur-3xl opacity-70 dark:opacity-30" />
       
       <div className="container max-w-4xl mx-auto px-4 relative z-10">
-        {/* SECTION: Snippet Header */}
         <div className="flex flex-col md:flex-row justify-between gap-6 bg-white dark:bg-gray-800/90 p-8 rounded-2xl shadow-xl backdrop-blur-sm border border-gray-100 dark:border-gray-700/50 mb-8 animate-in slide-in-from-top-4">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">{snippet.title}</h1>
@@ -279,14 +276,14 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
 
-        {/* SECTION: Description */}
+        {/* Description */}
         {snippet.description && (
           <div className="text-gray-800 font-bold dark:text-pink-500 bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-md border border-gray-100 dark:border-gray-700/50 mb-8 backdrop-blur-sm animate-in fade-in-50">
             {snippet.description}
           </div>
         )}
 
-        {/* SECTION: Tags */}
+        {/* Tags */}
         {snippet.tags && snippet.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8 animate-in fade-in-75">
             <h2 className="sr-only">Tags</h2>
@@ -298,7 +295,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
           </div>
         )}
 
-        {/* SECTION: Code Display with rehype-pretty-code */}
+        {/* SECTION: Code Display rehype */}
         <Card className="overflow-hidden border-0 shadow-2xl bg-white dark:bg-gray-800/90 transition-all hover:shadow-blue-500/5 mb-12 animate-in fade-in-100">
           <CardHeader className="pb-2 flex flex-row items-center justify-between bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
             <div className="flex items-center gap-3">
@@ -306,7 +303,6 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
                 {snippet.language.charAt(0).toUpperCase() + snippet.language.slice(1)}
               </span>
               
-              {/* File name display - optional */}
               <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -361,7 +357,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
           </CardFooter>
         </Card>
 
-        {/* SECTION: Comments and Version History */}
+        {/*Comments and Version History */}
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Feedback & History</h2>
           <Tabs defaultValue="comments" className="w-full animate-in fade-in-75">
@@ -375,7 +371,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
             </TabsList>
 
             <TabsContent value="comments">
-              {/* SECTION: Add Comment */}
+              {/* Add Comment */}
               {session ? (
                 <div className="mb-8 bg-white dark:bg-gray-800/90 p-8 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700/50 backdrop-blur-sm">
                   <h3 className="text-lg font-semibold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Add Your Comment</h3>
@@ -412,7 +408,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
                 </div>
               )}
 
-              {/* SECTION: Comments List */}
+              {/* Comments List */}
               <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Discussion</h3>
               {comments.length > 0 ? (
                 <div className="space-y-6">
@@ -447,7 +443,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
             </TabsContent>
 
             <TabsContent value="history">
-              {/* SECTION: Version History */}
+              {/* Version History */}
               <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Previous Versions</h3>
               {snippet.previousVersions && snippet.previousVersions.length > 0 ? (
                 <div className="space-y-6">
