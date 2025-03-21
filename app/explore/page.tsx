@@ -29,14 +29,28 @@ const languageOptions = [
   { value: "sql", label: "SQL" },
 ]
 
+interface Snippet {
+  _id: string;
+  title: string;
+  description: string;
+  code: string;
+  language: string;
+  visibility: string;
+  tags: string[];
+  author: {
+    _id: string;
+    name: string;
+    image?: string;
+  };
+}
+
 // Popular tags
 const popularTags = ["react", "nextjs", "api", "database", "algorithm", "frontend", "backend", "tutorial", "utility"]
 
 export default function ExplorePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
-  const [snippets, setSnippets] = useState([])
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "")
   const [selectedLanguage, setSelectedLanguage] = useState(searchParams.get("language") || "")

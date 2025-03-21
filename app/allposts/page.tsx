@@ -44,7 +44,8 @@ interface Comment {
   createdAt: string;
 }
 
-function SnippetCard({ snippet}) {
+// Update the component to use proper typing
+function SnippetCard({ snippet }: { snippet: Snippet }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [isCommenting, setIsCommenting] = useState(false);
@@ -86,7 +87,7 @@ function SnippetCard({ snippet}) {
     }
   };
 
-  const handleCommentSubmit = async (e) => {
+  const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
     
@@ -114,7 +115,7 @@ function SnippetCard({ snippet}) {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -123,8 +124,8 @@ function SnippetCard({ snippet}) {
   };
 
   // Function to get language color
-  const getLanguageColor = (lang) => {
-    const colors = {
+  const getLanguageColor = (lang: string) => {
+    const colors: Record<string, string> = {
       javascript: "bg-yellow-500",
       typescript: "bg-blue-500",
       python: "bg-green-500",

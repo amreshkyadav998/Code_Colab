@@ -77,7 +77,7 @@ function EnhancedSnippetCard({ snippet, onDelete }: EnhancedSnippetCardProps) {
 
   // Function to get language color
   const getLanguageColor = (lang: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
       javascript: "bg-yellow-500",
       typescript: "bg-blue-500",
       python: "bg-green-500",
@@ -91,7 +91,7 @@ function EnhancedSnippetCard({ snippet, onDelete }: EnhancedSnippetCardProps) {
       rust: "bg-orange-600",
     };
     return colors[lang.toLowerCase()] || "bg-gray-500";
-  };
+  };  
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 dark:bg-gray-800 bg-white border-gray-200 dark:border-gray-700">
