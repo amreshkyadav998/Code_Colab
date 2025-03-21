@@ -35,7 +35,7 @@ interface Snippet {
 
 interface Comment {
   _id: string;
-  text: string;
+  content: string;
   author: {
     _id: string;
     name?: string;
@@ -90,6 +90,7 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
+    console.log("Snippet ID:", snippet._id);
     
     setIsSubmitting(true);
     
@@ -99,7 +100,7 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text: commentText }),
+        body: JSON.stringify({ content: commentText }),
       });
       
       if (response.ok) {
@@ -271,7 +272,7 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
                         <span className="font-medium text-sm dark:text-gray-200">{comment.author?.name || "Anonymous"}</span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(comment.createdAt)}</span>
                       </div>
-                      <p className="text-sm text-gray-800 dark:text-gray-300">{comment.text}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-300">{comment.content}</p>
                     </div>
                   </div>
                 </div>
