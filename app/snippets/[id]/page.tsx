@@ -281,7 +281,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
 
         {/* SECTION: Description */}
         {snippet.description && (
-          <div className="text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-md border border-gray-100 dark:border-gray-700/50 mb-8 backdrop-blur-sm animate-in fade-in-50">
+          <div className="text-gray-800 font-bold dark:text-pink-500 bg-white dark:bg-gray-800/50 p-6 rounded-xl shadow-md border border-gray-100 dark:border-gray-700/50 mb-8 backdrop-blur-sm animate-in fade-in-50">
             {snippet.description}
           </div>
         )}
@@ -324,15 +324,15 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
               <Copy className="h-4 w-4" />
             </Button>
           </CardHeader>
-          <CardContent className="p-2">
+          <CardContent className="p-0">
             <div className="overflow-x-auto text-sm font-mono">
               <CodeBlock 
                 code={snippet.code}
                 language={snippet.language}
-                theme={isDarkMode ? "github-light" : "github-dark"}
+                theme={isDarkMode ? "github-dark" : "github-light"}
                 showLineNumbers={true}
                 enableCopy={false}
-                className="m-0 p-0 border-0 bg-transparent"
+                className="m-0 p-0 border-0 mr-2 bg-transparent"
               />
             </div>
           </CardContent>

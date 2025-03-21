@@ -4,5 +4,140 @@
 @tailwind utilities;
 
 
+/* Add this to your global CSS file */
+
+/* Prism.js theme customization */
+code[class*="language-"],
+pre[class*="language-"] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  line-height: 1.5;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Line Numbers */
+.line-numbers .line-numbers-rows {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  font-size: 100%;
+  left: 0;
+  width: 3em;
+  letter-spacing: -1px;
+  border-right: 1px solid rgba(153, 153, 153, 0.2);
+  user-select: none;
+  padding-left: 0.8em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.line-numbers-rows > span {
+  display: block;
+  counter-increment: linenumber;
+}
+
+.line-numbers-rows > span:before {
+  content: counter(linenumber);
+  color: rgba(153, 153, 153, 0.6);
+  display: block;
+  padding-right: 0.8em;
+  text-align: right;
+}
+
+/* Dark mode customizations */
+.dark pre[class*="language-"],
+.dark code[class*="language-"] {
+  color: #e4e4e4;
+  background: none;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Light mode customizations */
+.light pre[class*="language-"],
+.light code[class*="language-"] {
+  color: #333;
+  background: none;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Token colors - can be customized further */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #8a8f98;
+}
+
+.token.punctuation {
+  color: #a9b7c6;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #e78c45;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #b9ca4a;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #70c0b1;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #c397d8;
+}
+
+.token.function,
+.token.class-name {
+  color: #d54e53;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #e90;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
 
 

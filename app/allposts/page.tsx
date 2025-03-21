@@ -430,7 +430,7 @@ export default function SnippetFeedPage() {
 
       {/* Snippets Feed */}
       <section className="relative z-10">
-        <Card className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg shadow-gray-300/50 dark:shadow-gray-700/30 border border-gray-200/50 dark:border-gray-700/50">
+        <Card className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm p-2 rounded-xl shadow-lg shadow-gray-300/50 dark:shadow-gray-700/30 border border-gray-200/50 dark:border-gray-700/50">
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>

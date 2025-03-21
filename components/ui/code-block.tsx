@@ -67,7 +67,7 @@ export function CodeBlock({
       <style jsx>{`
         .code-block-wrapper {
           position: relative;
-          border-radius: 0.5rem;
+          border-radius: 1rem;
           overflow: hidden;
         }
         
@@ -82,7 +82,7 @@ export function CodeBlock({
         }
         
         .code-block-wrapper pre {
-          margin: 0;
+          margin-left:2.6rem;
           padding: 1rem;
           overflow-x: auto;
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
